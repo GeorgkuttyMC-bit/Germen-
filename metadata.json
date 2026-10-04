@@ -1,0 +1,6 @@
+{
+  "name": "KlinikLexikon — Medical German Reference & FSP Trainer",
+  "description": "Clinical German vocabulary, Fachsprachprüfung (FSP) register translator, Anamnese simulator, and curated textbook lexicon for international physicians.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
