@@ -16,8 +16,9 @@ import { AnamneseSimulator } from './components/AnamneseSimulator';
 import { BookCorpusExplorer } from './components/BookCorpusExplorer';
 import { FlashcardTrainer } from './components/FlashcardTrainer';
 import { WordByWordGameArena } from './components/WordByWordGameArena';
+import { WardSituationsDeepDive } from './components/WardSituationsDeepDive';
 
-type ActiveView = 'game' | 'atlas' | 'books' | 'anamnese' | 'trainer';
+type ActiveView = 'game' | 'situations' | 'atlas' | 'books' | 'anamnese' | 'trainer';
 
 export default function App() {
   const [activeView, setActiveView] = useState<ActiveView>('game');
@@ -101,12 +102,12 @@ export default function App() {
     setSelectedTermId(newTerm.id);
   };
 
-  const handleSpeakGerman = (text: string) => {
+  const handleSpeakGerman = (text: string, slow: boolean = false) => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'de-DE';
-      utterance.rate = 0.94;
+      utterance.rate = slow ? 0.72 : 0.95;
       window.speechSynthesis.speak(utterance);
     }
   };
@@ -227,6 +228,22 @@ export default function App() {
             </button>
             <button
               type="button"
+              onClick={() => setActiveView('situations')}
+              className={`py-1 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                activeView === 'situations'
+                  ? 'text-slate-900 underline underline-offset-8 decoration-2 decoration-[#0284C7]'
+                  : 'hover:text-slate-900'
+              }`}
+            >
+              {t(
+                uiLang,
+                'Klinik-Dialoge (Pflege & Arzt)',
+                'Live Ward Dialogues',
+                'Ward Dialogues · Pflege & Arzt'
+              )}
+            </button>
+            <button
+              type="button"
               onClick={() => setActiveView('atlas')}
               className={`py-1 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 activeView === 'atlas'
@@ -258,17 +275,6 @@ export default function App() {
             >
               {t(uiLang, 'Anamnese-Labor', 'Anamnesis Lab', 'Anamnesis · Anamnese')}
             </button>
-            <button
-              type="button"
-              onClick={() => setActiveView('trainer')}
-              className={`py-1 transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                activeView === 'trainer'
-                  ? 'text-slate-900 underline underline-offset-8 decoration-2 decoration-[#0284C7]'
-                  : 'hover:text-slate-900'
-              }`}
-            >
-              {t(uiLang, 'Vokabeltrainer', 'Flashcards', 'Flashcards')}
-            </button>
           </nav>
 
           {/* Zone 3: 2 Primary Actions */}
@@ -287,12 +293,14 @@ export default function App() {
             </button>
             <button
               type="button"
-              onClick={() => setActiveView(activeView === 'game' ? 'atlas' : 'game')}
+              onClick={() =>
+                setActiveView(activeView === 'situations' ? 'game' : 'situations')
+              }
               className="px-4 py-2 text-xs font-medium text-white bg-[#0284C7] rounded-lg hover:bg-sky-700 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
             >
-              {activeView === 'game'
-                ? t(uiLang, 'Klinischer Atlas', 'Open Clinical Atlas', 'Clinical Atlas')
-                : t(uiLang, 'Wort-für-Wort Spiel', 'Play Word-by-Word', 'Play Word Game')}
+              {activeView === 'situations'
+                ? t(uiLang, 'Wort-Spiel', 'Play Word Game', 'Play Word Game')
+                : t(uiLang, 'Patient & Pflege Dialoge', 'Live Ward Dialogues', 'Ward Dialogues')}
             </button>
           </div>
         </div>
@@ -303,6 +311,7 @@ export default function App() {
         {(
           [
             { id: 'game', label: 'Word Game' },
+            { id: 'situations', label: 'Ward Dialogues' },
             { id: 'atlas', label: 'Atlas' },
             { id: 'books', label: 'Textbooks' },
             { id: 'anamnese', label: 'Anamnesis' },
@@ -332,6 +341,15 @@ export default function App() {
             onSpeakEnglish={handleSpeakEnglish}
             masteredWordIds={masteredGameWords}
             onMarkWordMastered={handleMarkWordMastered}
+          />
+        )}
+
+        {/* VIEW 0.5: REAL-TIME PATIENT-CAREGIVER & DOCTOR-CAREGIVER SITUATIONS */}
+        {activeView === 'situations' && (
+          <WardSituationsDeepDive
+            uiLang={uiLang}
+            onSpeakGerman={handleSpeakGerman}
+            onSpeakEnglish={handleSpeakEnglish}
           />
         )}
 
